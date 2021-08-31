@@ -8,22 +8,22 @@ pipeline {
                 archiveArtifacts artifacts: 'dist/trainSchedule.zip'
             }
         }
-        stage ('Build Docker Image') {
+        stage('Build Docker Image') {
             when {
-               branch = 'master'   
+                branch 'master'
             }
             steps {
                 script {
-                    app = docker.build("krishabajra/train-schedule")
+                    app = docker.build("willbla/train-schedule")
                     app.inside {
-                       sh 'echo $(curl localhost:8080)   
+                        sh 'echo $(curl localhost:8080)'
                     }
                 }
             }
         }
-        stage ('Push Docker Image') {
+        stage('Push Docker Image') {
             when {
-             branch = master   
+                branch 'master'
             }
             steps {
                 script {
@@ -34,12 +34,12 @@ pipeline {
                 }
             }
         }
-        stage ('DeployToProduction') {
+        stage('DeployToProduction') {
             when {
-             branch = master   
+                branch 'master'
             }
             steps {
-               input 'Deploy to Production?'
+                input 'Deploy to Production?'
                 milestone(1)
                 withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
                     script {
